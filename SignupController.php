@@ -1,4 +1,5 @@
 <?php
+include "CORS/CORS.php";
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -9,10 +10,9 @@ require "connection/connection.php";
 $requestBody = file_get_contents('php://input');
 $data = json_decode($requestBody, true);
 
-$fname = $data["fname"] ?? null;
-$lname = $data["lname"] ?? null;
+$fname = $data["firstName"] ?? null;
+$lname = $data["lastName"] ?? null;
 $email = $data["email"] ?? null;
-$mobile = $data["mobile"] ?? null;
 $password = $data["password"] ?? null;
 
 // Input Validation
@@ -30,8 +30,6 @@ if (empty($fname)) {
     $response = ["success" => false, "message" => "Email must have less than 100 characters"];
 } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $response = ["success" => false, "message" => "Invalid Email !!!"];
-} else if (strlen($mobile) > 10) {
-    $response = ["success" => false, "message" => "Mobile number must not exceed 10 characters"];
 } else if (empty($password)) {
     $response = ["success" => false, "message" => "Please enter your Password !!!"];
 } else if (strlen($password) < 5 || strlen($password) > 20) {
@@ -49,7 +47,7 @@ if (empty($fname)) {
         $result = Database::iud(
             "INSERT INTO `customer` (`fname`, `lname`, `mobile`, `email`, `password`, `address_address_id`) 
              VALUES (?, ?, ?, ?, ?, ?)",
-            [$fname, $lname, $mobile, $email, $hashedPassword, null]
+            [$fname, $lname, 0, $email, $hashedPassword, null]
         );
 
         if ($result) {
