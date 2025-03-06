@@ -1,26 +1,28 @@
 <?php
 
-include "../../CORS/CORS .php";
-session_start();
-require "../../connection/connection.php";
+include "CORS/CORS.php";
 
-// Enable error reporting for debugging
+session_start();
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+require "connection/connection.php";
+
 $response = ["response" => false, "message" => "No orders found", "orders" => []];
 
 // Check if admin is logged in
-if (!isset($_SESSION["admin"])) {
-    $response["message"] = "Unauthorized access";
-    echo json_encode($response);
-    exit;
-}
+// if (!isset($_SESSION["admin"])) {
+//     $response["message"] = "Unauthorized access";
+//     echo json_encode($response);
+//     exit;
+// }
 
 // Fetch orders from the database
-$query = "
-    SELECT 
+
+
+$result = Database::search("SELECT 
         o.order_id, 
         c.fname, 
         c.lname, 
@@ -28,11 +30,8 @@ $query = "
         o.order_amount, 
         o.order_date 
     FROM `orders` o 
-    JOIN `customer` c ON o.customer_customer_id = c.customer_id
-    ORDER BY o.order_date DESC
-";
-
-$result = Database::search($query);
+    INNER JOIN `customer` c ON o.customer_customer_id = c.customer_id
+    ORDER BY o.order_date DESC");
 
 if ($result->num_rows > 0) {
     $orders = [];
