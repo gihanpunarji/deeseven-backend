@@ -13,7 +13,6 @@ header("Access-Control-Allow-Credentials: true");
 
 // Handle preflight requests for OPTIONS method
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    
     exit(0);
 }
 ?>

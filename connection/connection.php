@@ -5,7 +5,9 @@ class Database {
 
     public static function setupConnection() {
         if (!isset(Database::$connection)) {
-            Database::$connection = new mysqli("193.203.184.9", "u331468302_root", "DeezevenDB1", "u331468302_deeseven");
+            Database::$connection = new mysqli("193.203.184.9", "u331468302_root", "DeezevenDB1", "u331468302_deezeven");
+            // Database::$connection = new mysqli("localhost", "root", "Shks5670", "deezeven");
+
             if (Database::$connection->connect_error) {
                 die("Connection failed: " . Database::$connection->connect_error);
             }
