@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 
 $response = ["status" => false, "message" => "fetching failed", "data" => null];
 
-$table = Database::search("SELECT * FROM `product`");
+$table = Database::search("SELECT * FROM `product` INNER JOIN `category` ON product.category_category_id = category.category_id ORDER BY `date_added` DESC");
 $table2 = Database::search("SELECT * FROM `product_images`");
 
 $product_images = [];
