@@ -1,8 +1,6 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:3000");  // Allow React app
-header("Access-Control-Allow-Credentials: true");              // Allow credentials (session cookies)
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");    // Allow GET, POST, etc.
-header("Access-Control-Allow-Headers: Content-Type, Authorization, Session-Id"); // Allow headers
+// Allow requests from any origin (replace * with your React app's origin in production)
+header("Access-Control-Allow-Origin: http://localhost:3000");
 
 
 // Handle preflight requests for OPTIONS method
