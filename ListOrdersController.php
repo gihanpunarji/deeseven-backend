@@ -1,8 +1,9 @@
 <?php
 
+session_start();
+
 include "CORS/CORS.php";
 
-session_start();
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -13,11 +14,12 @@ require "connection/connection.php";
 $response = ["response" => false, "message" => "No orders found", "orders" => []];
 
 // Check if admin is logged in
-// if (!isset($_SESSION["admin"])) {
-//     $response["message"] = "Unauthorized access";
-//     echo json_encode($response);
-//     exit;
-// }
+if (!isset($_SESSION["admin"])) {
+
+    $response["message"] = "Unauthorized access";
+    echo json_encode($response);
+    exit;
+}
 
 // Fetch orders from the database
 
@@ -29,7 +31,7 @@ $result = Database::search("SELECT
         o.order_status, 
         o.order_amount, 
         o.order_date 
-    FROM `orders` o 
+    FROM `order` o 
     INNER JOIN `customer` c ON o.customer_customer_id = c.customer_id
     ORDER BY o.order_date DESC");
 
