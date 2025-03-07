@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 include "CORS/CORS.php";
 require_once "vendor/autoload.php";
