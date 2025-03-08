@@ -11,12 +11,12 @@ header('Content-Type: application/json');
 
 $response = ["response" => false, "message" => "No orders found", "orders" => []];
 
-// $admin = validateJWT();
-// if(!$admin) {
-//     $response = ["response" => false, "message" => "Unauthorized"];
-//     echo json_encode($response);
-//     exit;
-// }
+$admin = validateJWT();
+if(!$admin) {
+    $response = ["response" => false, "message" => "Unauthorized"];
+    echo json_encode($response);
+    exit;
+}
 
 // Fetch orders from the database
 $result = Database::search("SELECT 
