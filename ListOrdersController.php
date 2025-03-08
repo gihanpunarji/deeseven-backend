@@ -11,12 +11,12 @@ header('Content-Type: application/json');
 
 $response = ["response" => false, "message" => "No orders found", "orders" => []];
 
-$admin = validateJWT();
-if(!$admin) {
-    $response = ["response" => false, "message" => "Unauthorized"];
-    echo json_encode($response);
-    exit;
-}
+// $admin = validateJWT();
+// if(!$admin) {
+//     $response = ["response" => false, "message" => "Unauthorized"];
+//     echo json_encode($response);
+//     exit;
+// }
 
 // Fetch orders from the database
 $result = Database::search("SELECT 
@@ -32,7 +32,7 @@ $result = Database::search("SELECT
 
 if ($result->num_rows > 0) {
     $orders = [];
-    $statusText = ["Paid", "Processing", "Shipped", "Delivered"]; // ✅ Move outside the loop
+    $statusText = ["Paid", "Processing", "Shipped", "Delivered"];
 
     while ($row = $result->fetch_assoc()) {
         $status = isset($statusText[$row["order_status"]]) ? $statusText[$row["order_status"]] : "Unknown";
