@@ -29,7 +29,7 @@ if (empty($email)) {
     $response = ["response" => false, "message" => "Please enter the password"];
 } else {
     // Hardcoded admin check
-    if ($email == "deesevenclothing@gmail.com") {
+    if ($email == "123@gmail.com") {
         $stmt = Database::search("SELECT * FROM `admin` WHERE `email` = ?", [$email]);
 
         if ($stmt->num_rows == 1) {
