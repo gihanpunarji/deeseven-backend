@@ -13,14 +13,14 @@ $response = ["status" => false, "message" => "fetching failed", "data" => null];
 // Fetch product details
 $productQuery = Database::search("SELECT * FROM `product` 
     INNER JOIN `category` ON product.category_category_id = category.category_id 
-    INNER JOIN `sub_category` ON category.category_id = sub_category.category_category_id 
+    INNER JOIN `sub_category` ON product.product_id = sub_category.product_product_id 
     INNER JOIN `size_type` ON sub_category.size_type_size_type_id = size_type.size_type_id 
-    INNER JOIN `size` ON size_type.size_type_id = size.size_type_size_type_id 
     INNER JOIN `note` ON product.product_id = note.product_product_id
     WHERE `product_id` = $id");
 
 if ($productQuery->num_rows > 0) {
     $product = $productQuery->fetch_assoc();
+    $size_id =  $product['size_type_size_type_id'];
 
     // Fetch product images
     $imagesQuery = Database::search("SELECT * FROM `product_images` WHERE `product_product_id` = $id");
@@ -41,6 +41,13 @@ if ($productQuery->num_rows > 0) {
     $product['fabric'] = [];
     while ($fabric = $fabricQuery->fetch_assoc()) {
         $product['fabric'][] = $fabric;
+    }
+
+    //fetch sizes details
+    $sizesQuery = Database::search("SELECT * FROM `size` WHERE `size_type_size_type_id` = $size_id");
+    $product['sizes'] = [];
+    while ($size = $sizesQuery->fetch_assoc()) {
+        $product['sizes'][] = $size;
     }
 
     // Fetch fabric care instructions
