@@ -28,8 +28,7 @@ if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
 
 $order_id = intval($_GET['order_id']);
 
-$query = "
-    SELECT 
+$query = "SELECT 
      order_item_id,
      order_item_size,
      order_item_qty,
@@ -38,10 +37,11 @@ $query = "
      price
     FROM order_item oi
     INNER JOIN product p ON oi.product_product_id = p.product_id
-    WHERE oi.order_order_id = ?";
+    WHERE oi.order_order_id = $order_id";
 
 try {
-    $resultset = Database::search($query, [$order_id]);
+
+    $resultset = Database::search($query);
 
     if ($resultset->num_rows > 0) {
         $items = [];
