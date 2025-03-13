@@ -8,37 +8,40 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $data = file_get_contents("php://input");
+$request = json_decode($data, true);
 
-$cartItems = json_decode($data, true);
-
-if($cartItems == null) {
-    echo json_encode(["status" => false, "message" => "No data received"]);
+if (!isset($request['user_id'])) {
+    echo json_encode(["status" => false, "message" => "User ID is required"]);
     return;
 }
 
-$response = ["status" => false, "message" => "Item already in cart"]; // Default
+$user_id = $request['user_id'];
 
-foreach($cartItems as $item) {
-    $product_id = $item["id"];
-    $quantity = $item["qty"];
-    $size = $item["size"];
-    $email = $item["emailID"];
+// Fetch cart items for the user
+$cartQuery = Database::search("SELECT cart.*, product.title, product.price 
+                               FROM cart 
+                               INNER JOIN product ON cart.product_product_id = product.product_id
+                               WHERE cart.customer_customer_id = ?", [$user_id]);
 
-    // Check if item already exists in cart
-    $sql = Database::search("SELECT * FROM cart WHERE product_product_id = ? AND size = ?", [$product_id, $size]);
+$cartItems = [];
 
-    if($sql->num_rows == 0) {  
-        $result = Database::iud("INSERT INTO `cart` (`qty`, `size`, `product_product_id`, `customer_customer_id`)
-        VALUES (?, ?, ?, ?)", [$quantity, $size, $product_id, $email]);
+while ($cartItem = $cartQuery->fetch_assoc()) {
+    $product_id = $cartItem['product_product_id'];
 
-        if ($result) {
-            $response = ["status" => true, "message" => "Added to the cart"];
-        } else {
-            $response = ["status" => false, "message" => "Failed to add to the cart"];
-        }
-    }
+    // Fetch the first image for the product
+    $imageQuery = Database::search("SELECT image_url FROM product_images WHERE product_product_id = ? LIMIT 1", [$product_id]);
+    $image = $imageQuery->fetch_assoc();
+
+    $cartItems[] = [
+        "cart_id" => $cartItem['cart_id'],
+        "product_id" => $cartItem['product_product_id'],
+        "title" => $cartItem['title'],
+        "price" => $cartItem['price'],
+        "qty" => $cartItem['qty'],
+        "size" => $cartItem['size'],
+        "image" => $image ? $image['image_url'] : null // Assign the first image or null if not found
+    ];
 }
 
 header("Content-Type: application/json");
-echo json_encode($response);
-?>
+echo json_encode(["status" => true, "cart" => $cartItems]);

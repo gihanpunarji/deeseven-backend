@@ -13,10 +13,10 @@ $response = ["status" => false, "message" => "fetching failed", "data" => null];
 // Fetch product details
 $productQuery = Database::search("SELECT * FROM `product` 
     INNER JOIN `category` ON product.category_category_id = category.category_id 
-    INNER JOIN `sub_category` ON product.product_id = sub_category.product_product_id 
+    INNER JOIN `sub_category` ON product.sub_category_sub_category_id = sub_category.sub_category_id 
     INNER JOIN `size_type` ON sub_category.size_type_size_type_id = size_type.size_type_id 
     INNER JOIN `note` ON product.product_id = note.product_product_id
-    WHERE `product_id` = $id");
+    WHERE product.product_id = $id");
 
 if ($productQuery->num_rows > 0) {
     $product = $productQuery->fetch_assoc();
