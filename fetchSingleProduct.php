@@ -23,35 +23,37 @@ if ($productQuery->num_rows > 0) {
     $size_id =  $product['size_type_size_type_id'];
 
     // Fetch product images
-    $imagesQuery = Database::search("SELECT * FROM `product_images` WHERE `product_product_id` = $id");
+    $imagesQuery = Database::search("SELECT product_images.image_url FROM `product_images` WHERE `product_product_id` = $id");
     $product['images'] = [];
     while ($image = $imagesQuery->fetch_assoc()) {
         $product['images'][] = $image;
     }
 
     // Fetch add_on_features
-    $featuresQuery = Database::search("SELECT * FROM `add_on_features` WHERE `product_product_id` = $id");
+    $featuresQuery = Database::search("SELECT add_on_features.features FROM `add_on_features` WHERE `product_product_id` = $id");
     $product['add_on_features'] = [];
     while ($feature = $featuresQuery->fetch_assoc()) {
         $product['add_on_features'][] = $feature;
     }
 
     // Fetch fabric details
-    $fabricQuery = Database::search("SELECT * FROM `fabric` WHERE `product_product_id` = $id");
+    $fabricQuery = Database::search("SELECT fabric.about FROM `fabric` WHERE `product_product_id` = $id");
     $product['fabric'] = [];
     while ($fabric = $fabricQuery->fetch_assoc()) {
         $product['fabric'][] = $fabric;
     }
 
     //fetch sizes details
-    $sizesQuery = Database::search("SELECT * FROM `size` WHERE `size_type_size_type_id` = $size_id");
+    $sizesQuery = Database::search("SELECT size.size_name, product_size.quantity FROM `size`
+    INNER JOIN `product_size` ON size.size_id = product_size.size_size_id
+    WHERE `size_type_size_type_id` = $size_id AND product_size.product_product_id = $id");
     $product['sizes'] = [];
     while ($size = $sizesQuery->fetch_assoc()) {
         $product['sizes'][] = $size;
     }
 
     // Fetch fabric care instructions
-    $fabricCareQuery = Database::search("SELECT * FROM `fabric_care` WHERE `product_product_id` = $id");
+    $fabricCareQuery = Database::search("SELECT fabric_care.fabric_care FROM `fabric_care` WHERE `product_product_id` = $id");
     $product['fabric_care'] = [];
     while ($care = $fabricCareQuery->fetch_assoc()) {
         $product['fabric_care'][] = $care;
