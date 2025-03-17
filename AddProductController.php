@@ -15,6 +15,12 @@ $response = [
     "message" => "Failed to add product",
 ];
 
+$admin = validateJWT();
+if (!$admin) {
+    echo json_encode(["response" => false, "message" => "Unauthorized"]);
+    exit;
+}
+
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception("Invalid request method. Only POST allowed.");
