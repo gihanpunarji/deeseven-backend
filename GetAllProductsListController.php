@@ -40,40 +40,6 @@ if ($result->num_rows > 0) {
         $productId = $row["product_id"];
 
         if (!isset($productMap[$productId])) {
-            // Fetch images
-            $imagesQuery = Database::search("SELECT image_url FROM `product_images` WHERE `product_product_id` = ?", [$productId]);
-            $images = [];
-            while ($image = $imagesQuery->fetch_assoc()) {
-                $images[] = $image['image_url'];
-            }
-
-            // Fetch add_on_features
-            $featuresQuery = Database::search("SELECT features FROM `add_on_features` WHERE `product_product_id` = ?", [$productId]);
-            $features = [];
-            while ($feature = $featuresQuery->fetch_assoc()) {
-                $features[] = $feature['features'];
-            }
-
-            // Fetch fabric details
-            $fabricQuery = Database::search("SELECT about FROM `fabric` WHERE `product_product_id` = ?", [$productId]);
-            $fabric = [];
-            while ($fabricDetail = $fabricQuery->fetch_assoc()) {
-                $fabric[] = $fabricDetail['about'];
-            }
-            
-            // Fetch fabric care instructions
-            $fabricCareQuery = Database::search("SELECT fabric_care FROM `fabric_care` WHERE `product_product_id` = ?", [$productId]);
-            $fabricCare = [];
-            while ($care = $fabricCareQuery->fetch_assoc()) {
-                $fabricCare[] = $care['fabric_care'];
-            }
-
-            // Fetch note instructions
-            $noteQuery = Database::search("SELECT note FROM `note` WHERE `product_product_id` = ?", [$productId]);
-            $notes = [];
-            while ($note = $noteQuery->fetch_assoc()) {
-                $notes[] = $note['note'];
-            }
 
             $status = $row["product_status"] == 1 ? "Active" : "Inactive";
             $productMap[$productId] = [
@@ -92,11 +58,7 @@ if ($result->num_rows > 0) {
                     "name" => $row["sub_category_name"]
                 ],
                 "sizes" => [],
-                "images" => $images,
-                "add_on_features" => $features,
-                "notes" => $notes,
-                "fabric" => $fabric,
-                "fabric_care" => $fabricCare
+              
             ];
         }
 
