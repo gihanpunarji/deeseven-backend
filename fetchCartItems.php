@@ -33,7 +33,7 @@ while ($cartItem = $cartQuery->fetch_assoc()) {
     $image = $imageQuery->fetch_assoc();
 
     $cartItems[] = [
-        "cart_id" => $cartItem['cart_id'],
+        "id" => $cartItem['cart_id'],
         "product_id" => $cartItem['product_product_id'],
         "title" => $cartItem['title'],
         "price" => $cartItem['price'],

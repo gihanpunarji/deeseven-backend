@@ -10,7 +10,7 @@ $response = ["status" => false, "message" => "Fetching failed", "data" => null];
 
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : "";
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$limit = 8;
+$limit = 10;
 $offset = ($page - 1) * $limit;
 
 $sql = "SELECT * FROM `product` 
