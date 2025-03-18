@@ -18,7 +18,7 @@ if (empty($_GET['subCategory'])) {
     $response = ["status" => false, "message" => "fetching failed", "data" => null];
 
     $sub_category_table = Database::search("SELECT `sub_category_id` FROM `sub_category` 
-    WHERE `sub_category_name` = '" . $sub_category_name . "'");
+    WHERE `sub_category_name` = '" . $sub_category_name . "' LIMIT 5");
 
     if ($sub_category_table->num_rows == 1) {
         $row = $sub_category_table->fetch_assoc();
