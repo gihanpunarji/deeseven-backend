@@ -51,6 +51,10 @@ class Database {
         }
         $stmt->bind_param($types, ...$params); // Bind parameters dynamically
     }
+
+    public static function getLastInsertId() {
+        return Database::$connection->insert_id;
+    }
 }
 
 ?>

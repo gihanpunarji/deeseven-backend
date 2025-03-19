@@ -17,29 +17,29 @@ $password = $data["password"] ?? null;
 
 // Input Validation
 if (empty($fname)) {
-    $response = ["success" => false, "message" => "Please enter your first name !!!"];
+    $response = ["status" => false, "message" => "Please enter your first name !!!"];
 } else if (strlen($fname) > 45) {
-    $response = ["success" => false, "message" => "First name must have less than 45 characters"];
+    $response = ["status" => false, "message" => "First name must have less than 45 characters"];
 } else if (empty($lname)) {
-    $response = ["success" => false, "message" => "Please enter your last name !!!"];
+    $response = ["status" => false, "message" => "Please enter your last name !!!"];
 } else if (strlen($lname) > 45) {
-    $response = ["success" => false, "message" => "Last name must have less than 45 characters"];
+    $response = ["status" => false, "message" => "Last name must have less than 45 characters"];
 } else if (empty($email)) {
-    $response = ["success" => false, "message" => "Please enter your Email"];
+    $response = ["status" => false, "message" => "Please enter your Email"];
 } else if (strlen($email) > 100) {
-    $response = ["success" => false, "message" => "Email must have less than 100 characters"];
+    $response = ["status" => false, "message" => "Email must have less than 100 characters"];
 } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $response = ["success" => false, "message" => "Invalid Email !!!"];
+    $response = ["status" => false, "message" => "Invalid Email !!!"];
 } else if (empty($password)) {
-    $response = ["success" => false, "message" => "Please enter your Password !!!"];
+    $response = ["status" => false, "message" => "Please enter your Password !!!"];
 } else if (strlen($password) < 5 || strlen($password) > 20) {
-    $response = ["success" => false, "message" => "Password must be between 5 - 20 characters"];
+    $response = ["status" => false, "message" => "Password must be between 5 - 20 characters"];
 } else {
     
     $stmt = Database::search("SELECT * FROM `customer` WHERE `email` = ?", [$email]);
 
     if ($stmt->num_rows > 0) {
-        $response = ["success" => false, "message" => "Email has been already registered"];
+        $response = ["status" => false, "message" => "Email has been already registered"];
     } else {
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -51,9 +51,11 @@ if (empty($fname)) {
         );
 
         if ($result) {
-            $response = ["success" => true, "message" => "Registration successful!"];
+
+            $inserted_id = Database::getLastInsertId();
+            $response = ["status" => true, "message" => "Registration successful!", "id" => $inserted_id];
         } else {
-            $response = ["success" => false, "message" => "Failed to register user"];
+            $response = ["status" => false, "message" => "Failed to register user"];
         }
     }
 }
