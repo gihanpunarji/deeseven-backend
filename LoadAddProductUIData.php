@@ -16,11 +16,11 @@ $response = [
     "sub_categories" => [],
 ];
 
-$admin = validateJWT();
-if (!$admin) {
-    echo json_encode(["response" => false, "message" => "Unauthorized"]);
-    exit;
-}
+// $admin = validateJWT();
+// if (!$admin) {
+//     echo json_encode(["response" => false, "message" => "Unauthorized"]);
+//     exit;
+// }
 
 try {
     // Fetch categories

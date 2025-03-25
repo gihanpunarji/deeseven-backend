@@ -15,21 +15,20 @@ $response = [
     "sizes" => []
 ];
 
-$admin = validateJWT();
-if (!$admin) {
-    echo json_encode(["response" => false, "message" => "Unauthorized"]);
-    exit;
-}
-
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
-        $subCategoryId = $data['sub_category_id'];
+        $subCategoryId = $data['sub_category_id'] ?? null;
+
+        if ($subCategoryId === null) {
+            $response["message"] = "Sub-category ID is missing";
+            echo json_encode($response);
+            exit;
+        }
 
         // Fetch sizes based on sub-category
-        $resultset = Database::search("
-            SELECT s.size_id, s.size_name 
-            FROM size s
+        $resultset = Database::search("SELECT s.size_id, s.size_name 
+            FROM `size` s
             INNER JOIN sub_category sc ON s.size_type_size_type_id = sc.size_type_size_type_id
             WHERE sc.sub_category_id = ?
         ", [$subCategoryId]);
@@ -45,7 +44,11 @@ try {
             $response["sizes"] = $sizes;
             $response["response"] = true;
             $response["message"] = "Success";
+        } else {
+            $response["message"] = "No sizes found for the given sub-category";
         }
+    } else {
+        $response["message"] = "Invalid request method";
     }
 } catch (Exception $e) {
     $response = [
