@@ -16,11 +16,11 @@ $response = [
     "sub_categories" => [],
 ];
 
-// $admin = validateJWT();
-// if (!$admin) {
-//     echo json_encode(["response" => false, "message" => "Unauthorized"]);
-//     exit;
-// }
+$admin = validateJWT();
+if (!$admin) {
+    echo json_encode(["response" => false, "message" => "Unauthorized"]);
+    exit;
+}
 
 try {
     // Fetch categories
@@ -37,20 +37,49 @@ try {
     }
 
     // Fetch sub-categories
-    $resultset2 = Database::search("SELECT * FROM sub_category");
+    $resultset2 = Database::search("SELECT * FROM sub_category ORDER BY `sub_category_name` ASC");
     if ($resultset2->num_rows > 0) {
         $sub_categories = [];
         while ($row = $resultset2->fetch_assoc()) {
             $sub_categories[] = [
                 "sub_category_id" => $row["sub_category_id"],
                 "sub_category_name" => $row["sub_category_name"],
+                "size_type_id" => $row["size_type_size_type_id"],
             ];
         }
         $response["sub_categories"] = $sub_categories;
     }
 
+     // Fetch size_types
+     $resultset3 = Database::search("SELECT * FROM `size_type`");
+     if ($resultset3->num_rows > 0) {
+         $size_types = [];
+         while ($row = $resultset3->fetch_assoc()) {
+             $size_types[] = [
+                 "size_type_id" => $row["size_type_id"],
+                 "size_type_name" => $row["size_type_name"],
+             ];
+         }
+         $response["size_types"] = $size_types;
+     }
+
+     // Fetch sizes
+     $resultset4 = Database::search("SELECT * FROM `size` ORDER BY `size_name` ASC");
+     if ($resultset4->num_rows > 0) {
+         $sizes = [];
+         while ($row = $resultset4->fetch_assoc()) {
+             $sizes[] = [
+                 "size_id" => $row["size_id"],
+                 "size_name" => $row["size_name"],
+                 "size_type_id" => $row["size_type_size_type_id"],
+
+             ];
+         }
+         $response["sizes"] = $sizes;
+     }
+
     // Update the response message if categories or sub-categories are found
-    if (!empty($response["categories"]) || !empty($response["sub_categories"])) {
+    if (!empty($response["categories"]) || !empty($response["sub_categories"]) || !empty($response["size_types"])) {
         $response["response"] = true;
         $response["message"] = "Success";
     }
