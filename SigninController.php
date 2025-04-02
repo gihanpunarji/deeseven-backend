@@ -88,6 +88,7 @@ if (empty($email)) {
                     "user" => [
                         "id" => $user['customer_id'],
                         "email" => $user['email'],
+                        "status" => $user['status'],
                         "name" => $user['fname'] . ' ' . $user['lname']
                     ],
                     "role" => "customer"
