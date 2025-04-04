@@ -16,7 +16,7 @@ $response = [
 ];
 
 if (!isset($_GET["id"]) || !is_numeric($_GET["id"])) {
-    echo json_encode(["response" => false, "message" => "Invalid customer ID"]);
+    echo json_encode(["response" => false, "message" => "unathorized"]);
     exit;
 }
 
@@ -50,7 +50,7 @@ $customerResult = Database::search($customerQuery, [$customerId]);
 if ($customerResult->num_rows > 0) {
     $customer = [];
     while ($row = $customerResult->fetch_assoc()) {
-        $customer[] = [
+        $customer = [
             "id" => $row["customer_id"],
             "fname" => $row["fname"],
             "lname" => $row["lname"],

@@ -15,6 +15,7 @@ $response = ["status" => false, "message" => "No cart item", "data" => []];
 
 $sql = Database::search("SELECT cart.qty, 
            cart.size, 
+           cart.product_product_id, 
            product.title, 
            product.price, 
            MIN(product_images.image_url) AS image_url 
@@ -33,6 +34,7 @@ if($sql->num_rows > 0) {
     while($row = $sql->fetch_assoc()) {
         $row["image"] = $row["image_url"];
         $row["title"] = $row["title"];
+        $row["product_id"] = $row["product_product_id"];
         $row["price"] = $row["price"];
         $row["qty"] = $row["qty"];
         $row["size"] = $row["size"];
