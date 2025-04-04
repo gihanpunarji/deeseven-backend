@@ -18,11 +18,11 @@ $response = [
     "active_customers" => 0,
 ];
 
-// $admin = validateJWT();
-// if (!$admin) {
-//     echo json_encode(["response" => false, "message" => "Unauthorized"]);
-//     exit;
-// }
+$admin = validateJWT();
+if (!$admin) {
+    echo json_encode(["response" => false, "message" => "Unauthorized"]);
+    exit;
+}
 
 try {
     // Calculate today's date range
@@ -58,8 +58,7 @@ try {
 
     // Fetch active customers (assuming active customers are those who made a purchase today)
     $activeCustomersQuery = "SELECT COUNT(DISTINCT c.customer_id) as active_count FROM `customer` c 
-                              INNER JOIN `order` o ON c.customer_id = o.customer_customer_id 
-                               WHERE o.order_date BETWEEN '$todayStart' AND '$todayEnd'";
+                               WHERE c.status='1'";
     $resultset = Database::search($activeCustomersQuery);
     if ($resultset->num_rows > 0) {
         $row = $resultset->fetch_assoc();
