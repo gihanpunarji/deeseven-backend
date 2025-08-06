@@ -16,6 +16,16 @@ if(!isset($_GET['id'])) {
     exit;
 }
 
+$user = validateJWT();
+if (!$user) {
+    http_response_code(401);
+    echo json_encode([
+        "status" => false,
+        "message" => "Unauthorized"
+    ]);
+    exit;
+}
+
 $user_id = $_GET['id'];
 
 $response = [
