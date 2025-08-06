@@ -102,10 +102,35 @@ try {
         ];
     }
 
+    // WEEKLY CATEGORY SALES
+    $weekStart = date('Y-m-d', strtotime('-7 days'));
+    $categoryWeekSalesQuery = "
+SELECT c.category_name,
+       SUM(oi.order_item_qty * p.price) AS revenue
+FROM category c
+JOIN product p ON p.category_category_id = c.category_id
+JOIN order_item oi ON oi.product_product_id = p.product_id
+JOIN `order` o ON o.order_id = oi.order_order_id
+WHERE o.order_date BETWEEN '$weekStart' AND '$today'
+GROUP BY c.category_name
+ORDER BY revenue DESC;
+";
+
+    $resultset = Database::search($categoryWeekSalesQuery);
+    $response["weekly_category_sales"] = [];
+
+    while ($row = $resultset->fetch_assoc()) {
+        $response["weekly_category_sales"][] = [
+            "name" => $row["category_name"],
+            "value" => (float)$row["revenue"]
+        ];
+    }
+
+
     // 4. CURRENT TOTAL SALES AND ORDERS
     $currentSalesQuery = "SELECT SUM(order_amount) as total_sales, COUNT(order_id) as total_orders 
-        FROM `order` 
-        WHERE order_date BETWEEN '$currentMonthStart' AND '$today'";
+    FROM `order`";
+
 
     $resultset = Database::search($currentSalesQuery);
     if ($row = $resultset->fetch_assoc()) {
@@ -162,10 +187,46 @@ try {
     $prevCustomers = ($row = $resultset->fetch_assoc()) ? (int)$row["prev_customers"] : 0;
 
     // 9. CHANGE PERCENTAGES
-    function calcPercent($current, $previous) {
+    function calcPercent($current, $previous)
+    {
         if ($previous == 0) return $current > 0 ? 100 : 0;
         return round((($current - $previous) / $previous) * 100, 2);
     }
+
+    $categoryTrendQuery = "
+SELECT 
+    DATE(o.order_date) as date,
+    c.category_name,
+    SUM(p.price * oi.order_item_qty) as sales
+FROM `order` o
+JOIN order_item oi ON o.order_id = oi.order_order_id
+JOIN product p ON oi.product_product_id = p.product_id
+JOIN category c ON p.category_category_id = c.category_id
+GROUP BY DATE(o.order_date), c.category_name
+ORDER BY date ASC;
+";
+
+    $categoryTrendResult = Database::search($categoryTrendQuery);
+    $trendMap = [];
+
+    while ($row = $categoryTrendResult->fetch_assoc()) {
+        $day = date('D', strtotime($row['date'])); // e.g. 'Mon', 'Tue'
+        if (!isset($trendMap[$day])) {
+            $trendMap[$day] = ["day" => $day];
+        }
+        $trendMap[$day][$row['category_name']] = (float)$row['sales'];
+    }
+
+    // reindex as numeric array
+    $response["category_trend"] = array_values($trendMap);
+
+
+    $response["avg_order_value"] = $response["total_orders"] > 0
+        ? round($response["total_sales"] / $response["total_orders"], 2)
+        : 0.00;
+
+    $response["sales_growth"] = $response["sales_change_percent"] . "%";
+
 
     $response["sales_change_percent"] = calcPercent($response["total_sales"], $prevSales);
     $response["orders_change_percent"] = calcPercent($response["total_orders"], $prevOrders);
