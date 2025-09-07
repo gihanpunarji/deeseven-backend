@@ -1,5 +1,5 @@
 <?php
-include "CORS/CORS.php";
+require_once "CORS/CORS.php";
 require "connection/connection.php";
 
 ini_set('display_errors', 1);

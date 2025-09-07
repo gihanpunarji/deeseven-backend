@@ -1,8 +1,8 @@
 <?php
-header("Access-Control-Allow-Origin: https://deezevenclothing.com"); // Use your frontend URL
+header("Access-Control-Allow-Origin: https://deezevenclothing.com"); 
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Credentials: true"); // 🔥 Make sure this is present
+header("Access-Control-Allow-Credentials: true"); 
 
 // Handle preflight requests for OPTIONS method
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

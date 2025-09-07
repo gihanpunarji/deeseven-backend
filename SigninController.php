@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include "CORS/CORS.php";
+require_once "CORS/CORS.php";
 require_once "vendor/autoload.php";
 
 use Firebase\JWT\JWT;

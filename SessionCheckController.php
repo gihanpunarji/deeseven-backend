@@ -1,5 +1,5 @@
 <?php
-include "CORS/CORS.php";
+require_once "CORS/CORS.php";
 
 session_start();
 

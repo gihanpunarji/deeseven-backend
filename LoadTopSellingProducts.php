@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-include "CORS/CORS.php";
+require_once "CORS/CORS.php";
 require "connection/connection.php";
 require_once "jwt_middleware.php";
 
