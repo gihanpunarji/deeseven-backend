@@ -15,6 +15,12 @@ $response = [
     "sizes" => []
 ];
 
+$admin = validateJWT();
+if (!$admin) {
+    echo json_encode(["response" => false, "message" => "Unauthorized"]);
+    exit;
+}
+
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
@@ -31,6 +37,7 @@ try {
             FROM `size` s
             INNER JOIN sub_category sc ON s.size_type_size_type_id = sc.size_type_size_type_id
             WHERE sc.sub_category_id = ?
+            ORDER BY s.size_name ASC
         ", [$subCategoryId]);
 
         if ($resultset->num_rows > 0) {
@@ -50,6 +57,7 @@ try {
     } else {
         $response["message"] = "Invalid request method";
     }
+    
 } catch (Exception $e) {
     $response = [
         "response" => false,

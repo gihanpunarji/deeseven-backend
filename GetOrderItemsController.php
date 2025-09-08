@@ -29,33 +29,34 @@ if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
 $order_id = intval($_GET['order_id']);
 
 $query = "SELECT 
-     order_item_id,
-     order_item_size,
-     order_item_qty,
-     product_id,
-     title,
-     price
-    FROM order_item oi
-    INNER JOIN product p ON oi.product_product_id = p.product_id
-    WHERE oi.order_order_id = $order_id";
+    oi.order_item_id,
+    oi.order_item_size,
+    oi.order_item_qty,
+    p.product_id,
+    p.title,
+    p.price
+FROM order_item oi
+INNER JOIN product p ON oi.product_product_id = p.product_id
+WHERE oi.order_order_id = ?";
 
 try {
-
-    $resultset = Database::search($query);
-
+    $resultset = Database::search($query, [$order_id]);
+    
     if ($resultset->num_rows > 0) {
         $items = [];
         while ($row = $resultset->fetch_assoc()) {
             $items[] = [
                 "order_item_id" => $row["order_item_id"],
-                "qty" => $row["order_item_qty"],
-                "size" => $row["order_item_size"],
+                "order_item_qty" => $row["order_item_qty"], // Match what component expects
+                "order_item_size" => $row["order_item_size"],
                 "product_id" => $row["product_id"],
-                "product_title" => $row["title"],
-                "product_price" => $row["price"]
+                "title" => $row["title"], // Component expects 'title'
+                "product_title" => $row["title"], // Also provide as product_title for flexibility
+                "product_price" => $row["price"],
+                "price" => $row["price"] // Also provide as 'price'
             ];
         }
-
+        
         $response = [
             "response" => true,
             "message" => "Success",
@@ -64,7 +65,7 @@ try {
     } else {
         $response = [
             "response" => false,
-            "message" => "No items found",
+            "message" => "No items found for this order",
             "items" => []
         ];
     }
