@@ -1,5 +1,4 @@
 <?php
-// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -79,7 +78,9 @@ try {
         
         // Insert new data
         foreach ($values as $value) {
-            Database::iud("INSERT INTO $table (product_product_id, $column) VALUES (?, ?)", [$productId, $value]);
+            if (trim($value) !== "") {
+                Database::iud("INSERT INTO $table (product_product_id, $column) VALUES (?, ?)", [$productId, $value]);
+            }
         }
     }
 
@@ -89,11 +90,22 @@ try {
     updateRelatedData("fabric_care", "fabric_care", $fabric_care, $productId);
     updateRelatedData("add_on_features", "features", $add_on_features, $productId);
 
-    // Update sizes
-    Database::iud("DELETE FROM product_size WHERE product_product_id = ?", [$productId]);
+    // Update sizes - only update quantities, don't delete/recreate
     foreach ($sizes as $size) {
-        Database::iud("INSERT INTO product_size (product_product_id, size_size_id, quantity) VALUES (?, ?, ?)", 
-                      [$productId, $size['size_id'], $size['quantity']]);
+        if (isset($size['size_id']) && isset($size['quantity'])) {
+            // Check if the product_size record exists
+            $existingSize = Database::search("SELECT product_size_id FROM product_size WHERE product_product_id = ? AND size_size_id = ?", [$productId, $size['size_id']]);
+            
+            if ($existingSize->num_rows > 0) {
+                // Update existing record
+                Database::iud("UPDATE product_size SET quantity = ? WHERE product_product_id = ? AND size_size_id = ?", 
+                            [$size['quantity'], $productId, $size['size_id']]);
+            } else {
+                // Insert new record
+                Database::iud("INSERT INTO product_size (product_product_id, size_size_id, quantity) VALUES (?, ?, ?)", 
+                            [$productId, $size['size_id'], $size['quantity']]);
+            }
+        }
     }
 
     // Handle image uploads if new images are provided
